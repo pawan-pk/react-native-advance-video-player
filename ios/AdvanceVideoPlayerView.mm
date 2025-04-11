@@ -6,6 +6,7 @@
 #import <AdvanceVideoPlayer/RCTComponentViewHelpers.h>
 
 #import "RCTFabricComponentsPlugins.h"
+#import "AdvanceVideoPlayer-Swift.h"
 
 using namespace facebook::react;
 
@@ -14,7 +15,7 @@ using namespace facebook::react;
 @end
 
 @implementation AdvanceVideoPlayerView {
-    UIView * _view;
+  AdvanceVideoPlayer * _player;
 }
 
 + (ComponentDescriptorProvider)componentDescriptorProvider
@@ -27,10 +28,10 @@ using namespace facebook::react;
   if (self = [super initWithFrame:frame]) {
     static const auto defaultProps = std::make_shared<const AdvanceVideoPlayerViewProps>();
     _props = defaultProps;
-
-    _view = [[UIView alloc] init];
-
-    self.contentView = _view;
+    
+    _player = [[AdvanceVideoPlayer alloc] init];
+    _player.frame = frame;
+    self.contentView = _player;
   }
 
   return self;
@@ -41,9 +42,10 @@ using namespace facebook::react;
     const auto &oldViewProps = *std::static_pointer_cast<AdvanceVideoPlayerViewProps const>(_props);
     const auto &newViewProps = *std::static_pointer_cast<AdvanceVideoPlayerViewProps const>(props);
 
-    if (oldViewProps.color != newViewProps.color) {
-        NSString * colorToConvert = [[NSString alloc] initWithUTF8String: newViewProps.color.c_str()];
-        [_view setBackgroundColor:[self hexStringToColor:colorToConvert]];
+    if (oldViewProps.url != newViewProps.url) {
+        NSString * urlToConvert = [[NSString alloc] initWithUTF8String: newViewProps.url.c_str()];
+        NSURL *url = [self urlStringToURL:urlToConvert];
+//        [_player setUrl:url];
     }
 
     [super updateProps:props oldProps:oldProps];
@@ -54,18 +56,10 @@ Class<RCTComponentViewProtocol> AdvanceVideoPlayerViewCls(void)
     return AdvanceVideoPlayerView.class;
 }
 
-- hexStringToColor:(NSString *)stringToConvert
+- urlStringToURL:(NSString *)stringToConvert
 {
-    NSString *noHashString = [stringToConvert stringByReplacingOccurrencesOfString:@"#" withString:@""];
-    NSScanner *stringScanner = [NSScanner scannerWithString:noHashString];
-
-    unsigned hex;
-    if (![stringScanner scanHexInt:&hex]) return nil;
-    int r = (hex >> 16) & 0xFF;
-    int g = (hex >> 8) & 0xFF;
-    int b = (hex) & 0xFF;
-
-    return [UIColor colorWithRed:r / 255.0f green:g / 255.0f blue:b / 255.0f alpha:1.0f];
+    NSString *encodedString = [stringToConvert stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    return [NSURL URLWithString:encodedString];
 }
 
 @end

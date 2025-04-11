@@ -1,2 +1,4 @@
-export { default as AdvanceVideoPlayerView } from './AdvanceVideoPlayerViewNativeComponent';
-export * from './AdvanceVideoPlayerViewNativeComponent';
+import AdvanceVideoPlayerView from './AdvanceVideoPlayerViewNativeComponent';
+export type { AdvanceVideoPlayerProps } from './AdvanceVideoPlayerViewNativeComponent';
+
+export default AdvanceVideoPlayerView;

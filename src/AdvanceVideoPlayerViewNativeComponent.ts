@@ -1,8 +1,31 @@
 import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
-import type { ViewProps } from 'react-native';
+import type {
+  HostComponent,
+  ViewProps,
+  StyleProp,
+  ViewStyle,
+} from 'react-native';
 
 interface NativeProps extends ViewProps {
-  color?: string;
+  url?: string;
 }
 
-export default codegenNativeComponent<NativeProps>('AdvanceVideoPlayerView');
+type NativeEvent<T> = {
+  nativeEvent: T;
+};
+
+type VLCPlayerEvent = {
+  message?: string;
+};
+
+type NativeEventsProps = {
+  onError?: (event: NativeEvent<VLCPlayerEvent>) => void;
+};
+
+export interface AdvanceVideoPlayerProps {
+  style?: StyleProp<ViewStyle>;
+}
+
+export default codegenNativeComponent<NativeProps>(
+  'AdvanceVideoPlayerView'
+) as HostComponent<NativeProps & NativeEventsProps>;

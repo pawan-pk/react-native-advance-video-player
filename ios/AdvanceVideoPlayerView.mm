@@ -143,7 +143,9 @@ Class<RCTComponentViewProtocol> AdvanceVideoPlayerViewCls(void)
         }
         break;
       case VLCMediaPlayerStatePlaying:
-        [_player onPlay];
+        if (!player.isPlaying) {
+          [_player onPlay];
+        }
         _buffering = FALSE;
         eventEmitter->onBuffer(AdvanceVideoPlayerViewEventEmitter::OnBuffer{
           .buffering = false
@@ -180,17 +182,17 @@ Class<RCTComponentViewProtocol> AdvanceVideoPlayerViewCls(void)
 
 - (void)mediaPlayerTitleChanged:(NSNotification *)aNotification
 {
-//  RCTLog(@"mediaPlayerTitleChanged: %@", aNotification);
+  RCTLog(@"mediaPlayerTitleChanged: %@", aNotification);
 }
 
 - (void)mediaPlayerChapterChanged:(NSNotification *)aNotification
 {
-//  RCTLog(@"mediaPlayerChapterChanged: %@", aNotification);
+  RCTLog(@"mediaPlayerChapterChanged: %@", aNotification);
 }
 
 - (void)mediaPlayerSnapshot:(NSNotification *)aNotification
 {
-//  RCTLog(@"mediaPlayerSnapshot: %@", aNotification);
+  RCTLog(@"mediaPlayerSnapshot: %@", aNotification);
 }
 
 - (void) mediaPlayerLoudnessChanged:(NSNotification *)aNotification

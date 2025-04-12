@@ -19,20 +19,6 @@ public class AdvanceVideoPlayer: UIView {
     return view
   }()
   
-  private lazy var overlayView: UIView = {
-    let blurEffect = UIBlurEffect(style: .regular)
-    let blurVIew = UIVisualEffectView(effect: blurEffect)
-    let indicator = UIActivityIndicatorView(style: .large)
-    indicator.translatesAutoresizingMaskIntoConstraints = false
-    blurVIew.contentView.addSubview(indicator)
-    NSLayoutConstraint.activate([
-      blurVIew.contentView.centerXAnchor.constraint(equalTo: indicator.centerXAnchor),
-      blurVIew.contentView.centerYAnchor.constraint(equalTo: indicator.centerYAnchor)
-    ])
-    indicator.startAnimating()
-    return blurVIew
-  }()
-  
   // MARK: - Varibales
   @objc public var url: String? {
     didSet {
@@ -67,10 +53,6 @@ public class AdvanceVideoPlayer: UIView {
 
   @objc public var audioTrack: Int = 1
   @objc public var textTrack: Int = 1
-  
-  @objc public func onPlay() {
-    self.overlayView.removeFromSuperview()
-  }
 
   @objc public var delegate: VLCMediaPlayerDelegate?
   @objc public var mediaDelegate: VLCMediaDelegate?
@@ -149,14 +131,5 @@ public class AdvanceVideoPlayer: UIView {
     if !paused {
       player.play()
     }
-    
-    overlayView.translatesAutoresizingMaskIntoConstraints = false
-    self.addSubview(overlayView)
-    NSLayoutConstraint.activate([
-      self.leftAnchor.constraint(equalTo: overlayView.leftAnchor),
-      self.rightAnchor.constraint(equalTo: overlayView.rightAnchor),
-      self.topAnchor.constraint(equalTo: overlayView.topAnchor),
-      self.bottomAnchor.constraint(equalTo: overlayView.bottomAnchor)
-    ])
   }
 }

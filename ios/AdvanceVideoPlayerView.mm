@@ -143,9 +143,6 @@ Class<RCTComponentViewProtocol> AdvanceVideoPlayerViewCls(void)
         }
         break;
       case VLCMediaPlayerStatePlaying:
-        if (!player.isPlaying) {
-          [_player onPlay];
-        }
         _buffering = FALSE;
         eventEmitter->onBuffer(AdvanceVideoPlayerViewEventEmitter::OnBuffer{
           .buffering = false

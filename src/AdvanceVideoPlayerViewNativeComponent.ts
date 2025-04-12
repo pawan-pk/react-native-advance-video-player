@@ -6,27 +6,35 @@ import type {
   Int32,
 } from 'react-native/Libraries/Types/CodegenTypes';
 
-// type MediaTrack = {
-//   id: Int32;
-//   name: string;
-// };
-
 type MediaProgress = {
   currentTime: Double;
   remainingTime: Double;
   position: Double;
 };
 
-type VLCMedia = {
-  subtitle: string;
-  // audioTracks: ReadonlyArray<MediaTrack>;
-  // textTracks: ReadonlyArray<MediaTrack>;
+type NativeMediaMetaData = {
+  title: string;
+  artist: string;
+  albumArtist: string;
+  album: string;
+  genre: string;
+  trackNumber: Int32;
+  discNumber: Int32;
+  artworkURL: string;
+};
+
+export type NativeVLCMedia = {
+  titles: string;
+  audioTracksIndexes: string;
+  audioTracksNames: string;
+  subtitleTracksIndexes: string;
+  subtitleTracksNames: string;
   videoSize: {
     width: Double;
     height: Double;
   };
   duration: Double;
-  aspectRatio: Double;
+  aspectRatio: string;
 };
 
 interface NativeProps extends ViewProps {
@@ -36,10 +44,11 @@ interface NativeProps extends ViewProps {
   volume?: Double;
   paused?: boolean;
   aspectRatio?: Double;
-  selectedAudioTrack?: Int32;
-  selectedTextTrack?: Int32;
+  audioTrack?: Int32;
+  textTrack?: Int32;
 
-  onLoad?: DirectEventHandler<VLCMedia>;
+  onMediaMetaData?: DirectEventHandler<NativeMediaMetaData>;
+  onLoad?: DirectEventHandler<NativeVLCMedia>;
   onPaused?: DirectEventHandler<{}>;
   onEnd?: DirectEventHandler<{}>;
   onStop?: DirectEventHandler<{}>;

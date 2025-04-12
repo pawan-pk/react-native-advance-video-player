@@ -59,26 +59,21 @@ public class AdvanceVideoPlayer: UIView {
       paused ? player.pause() : player.play()
     }
   }
-  @objc public var resizeMode: String = "contain" {
+  @objc public var aspectRatio: Double = .zero {
     didSet {
-      print("Resize mode: \(resizeMode) not implemented")
+      print("Resize mode: \(aspectRatio) not implemented")
     }
   }
 
-  // MARK: - Setter functions
-  @objc public func setAudioTrack(type: String, value: String) {
-    print("Text track:", type, value)
-  }
-  
-  @objc public func setTextTrack(type: String, value: String) {
-    print("Text track:", type, value)
-  }
+  @objc public var audioTrack: Int = 1
+  @objc public var textTrack: Int = 1
   
   @objc public func onPlay() {
     self.overlayView.removeFromSuperview()
   }
-  
+
   @objc public var delegate: VLCMediaPlayerDelegate?
+  @objc public var mediaDelegate: VLCMediaDelegate?
   
   private var player: VLCMediaPlayer = {
     let player = VLCMediaPlayer()
@@ -144,7 +139,8 @@ public class AdvanceVideoPlayer: UIView {
       media.addOption("--\(option)")
       media.addOption(":\(option)")
     }
-    
+//    media.delegate = mediaDelegate
+//    media.parse(options: [.parseNetwork,.fetchNetwork,.fetchLocal], timeout: 30)
     player.setDeinterlaceFilter(nil)
     player.adjustFilter.isEnabled = false
     player.media = media

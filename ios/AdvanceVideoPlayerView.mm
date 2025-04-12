@@ -9,16 +9,18 @@
 #import "AdvanceVideoPlayer-Swift.h"
 #import "RCTConvert+MediaTrack.h"
 #import <MobileVLCKit/VLCMediaPlayer.h>
+#import <MobileVLCKit/VLCMedia.h>
 
 using namespace facebook::react;
 
-@interface AdvanceVideoPlayerView () <RCTAdvanceVideoPlayerViewViewProtocol, VLCMediaPlayerDelegate>
+@interface AdvanceVideoPlayerView () <RCTAdvanceVideoPlayerViewViewProtocol, VLCMediaPlayerDelegate, VLCMediaDelegate>
 
 @end
 
 @implementation AdvanceVideoPlayerView {
   AdvanceVideoPlayer * _player;
-  NSDictionary * _videoInfo;
+  BOOL _videoLoaded;
+  BOOL _buffering;
 }
 
 + (ComponentDescriptorProvider)componentDescriptorProvider
@@ -77,21 +79,16 @@ using namespace facebook::react;
         _player.paused = newViewProps.paused;
     }
   
-    if (oldViewProps.resizeMode != newViewProps.resizeMode) {
-      NSString * resizeMode = [[NSString alloc] initWithUTF8String: newViewProps.resizeMode.c_str()];
-        _player.resizeMode = resizeMode;
+    if (oldViewProps.aspectRatio != newViewProps.aspectRatio) {
+        _player.aspectRatio = newViewProps.aspectRatio;
     }
     
-    if (oldViewProps.selectedAudioTrack.type != newViewProps.selectedAudioTrack.type || oldViewProps.selectedAudioTrack.value != newViewProps.selectedAudioTrack.value) {
-      NSString * audioTrackType = [[NSString alloc] initWithUTF8String: newViewProps.selectedAudioTrack.type.c_str()];
-      NSString * audioTrackValue = [[NSString alloc] initWithUTF8String: newViewProps.selectedAudioTrack.value.c_str()];
-      [_player setAudioTrackWithType:audioTrackType value:audioTrackValue];
+    if (oldViewProps.audioTrack != newViewProps.audioTrack) {
+        _player.audioTrack = newViewProps.audioTrack;
     }
   
-    if (oldViewProps.selectedTextTrack.type != newViewProps.selectedTextTrack.type || oldViewProps.selectedTextTrack.value != newViewProps.selectedTextTrack.value) {
-      NSString * textTrackType = [[NSString alloc] initWithUTF8String: newViewProps.selectedTextTrack.type.c_str()];
-      NSString * textTrackValue = [[NSString alloc] initWithUTF8String: newViewProps.selectedTextTrack.value.c_str()];
-      [_player setTextTrackWithType:textTrackType value:textTrackValue];
+    if (oldViewProps.audioTrack != newViewProps.audioTrack) {
+      _player.textTrack = newViewProps.textTrack;
     }
 
     [super updateProps:props oldProps:oldProps];
@@ -102,63 +99,16 @@ Class<RCTComponentViewProtocol> AdvanceVideoPlayerViewCls(void)
     return AdvanceVideoPlayerView.class;
 }
 
-// MARK: - Helper functions
-- (NSDictionary *)getVideoInfo:(VLCMediaPlayer *)_player
-{
-  NSMutableDictionary *info = [NSMutableDictionary new];
-  //  info[@"duration"] = _player.media
-  int i;
-  if (_player.videoSize.width > 0) {
-    info[@"videoSize"] =  @{
-      @"width":  @(_player.videoSize.width),
-      @"height": @(_player.videoSize.height)
-    };
-  }
-  
-  if (_player.numberOfAudioTracks > 0) {
-    NSMutableArray *tracks = [NSMutableArray new];
-    for (i = 0; i < _player.numberOfAudioTracks; i++) {
-      if (_player.audioTrackIndexes[i] && _player.audioTrackNames[i]) {
-        [tracks addObject:  @{
-          @"id": _player.audioTrackIndexes[i],
-          @"name":  _player.audioTrackNames[i]
-        }];
-      }
-    }
-    info[@"audioTracks"] = tracks;
-  }
-  
-  if (_player.numberOfSubtitlesTracks > 0) {
-    NSMutableArray *tracks = [NSMutableArray new];
-    for (i = 0; i < _player.numberOfSubtitlesTracks; i++) {
-      if (_player.videoSubTitlesIndexes[i] && _player.videoSubTitlesNames[i]) {
-        [tracks addObject:  @{
-          @"id": _player.videoSubTitlesIndexes[i],
-          @"name":  _player.videoSubTitlesNames[i]
-        }];
-      }
-    }
-    info[@"textTracks"] = tracks;
-  }
-  
-  return info;
-}
-
 // MARK: - VLCMediaPlayerDelegate
 - (void)mediaPlayerStateChanged:(NSNotification *)aNotification
 {
   if ([aNotification.object isKindOfClass:[VLCMediaPlayer class]]) {
-    VLCMediaPlayer *_player = (VLCMediaPlayer *)aNotification.object;
-    VLCMediaPlayerState state = _player.state;
+    VLCMediaPlayer *player = (VLCMediaPlayer *)aNotification.object;
+    VLCMediaPlayerState state = player.state;
     const auto eventEmitter = [self getEventEmitter];
     switch (state) {
       case VLCMediaPlayerStateOpening:
-        eventEmitter->onLoad(AdvanceVideoPlayerViewEventEmitter::OnLoad{
-          .subtitle = "Testing",
-          .audioTrack = "0",
-          .duration = 2.0,
-          .aspectRatio = 1
-        });
+        NSLog(@"Opening Player");
         break;
       case VLCMediaPlayerStatePaused:
         eventEmitter->onPaused({});
@@ -167,21 +117,34 @@ Class<RCTComponentViewProtocol> AdvanceVideoPlayerViewCls(void)
         eventEmitter->onStop({});
         break;
       case VLCMediaPlayerStateBuffering:
-        if (!_videoInfo && _player.numberOfAudioTracks > 0) {
-          _videoInfo = [self getVideoInfo:_player];
-          NSLog(@"Video Details:%@",_videoInfo);
+        if (!_videoLoaded && player.numberOfVideoTracks > 0) {
+          _videoLoaded = YES;
           eventEmitter->onLoad(AdvanceVideoPlayerViewEventEmitter::OnLoad{
-            .subtitle = "Testing",
-            .audioTrack = "0",
-            .duration = 2.0,
-            .aspectRatio = 1
+            .titles = [[player.titleDescriptions componentsJoinedByString:@","] UTF8String],
+            .subtitleTracksIndexes = [[player.videoSubTitlesIndexes componentsJoinedByString:@","] UTF8String],
+            .subtitleTracksNames = [[player.videoSubTitlesNames componentsJoinedByString:@","] UTF8String],
+            .audioTracksIndexes = [[player.audioTrackIndexes componentsJoinedByString:@","] UTF8String],
+            .audioTracksNames = [[player.audioTrackNames componentsJoinedByString:@","] UTF8String],
+            .videoSize = AdvanceVideoPlayerViewEventEmitter::OnLoadVideoSize{
+//              .height = player.videoSize.height,
+//              .width = player.videoSize.width,
+              .height = 1000,
+              .width = 1900,
+            },
+            .duration = 12.0,
+            .aspectRatio = [@"16:9" UTF8String]//player.videoAspectRatio,
           });
         }
-        eventEmitter->onBuffer(AdvanceVideoPlayerViewEventEmitter::OnBuffer{
-          .buffering = true
-        });
+        if (!_buffering) {
+          eventEmitter->onBuffer(AdvanceVideoPlayerViewEventEmitter::OnBuffer{
+            .buffering = true
+          });
+          _buffering = YES;
+        }
         break;
       case VLCMediaPlayerStatePlaying:
+        [_player onPlay];
+        _buffering = FALSE;
         eventEmitter->onBuffer(AdvanceVideoPlayerViewEventEmitter::OnBuffer{
           .buffering = false
         });
@@ -190,10 +153,10 @@ Class<RCTComponentViewProtocol> AdvanceVideoPlayerViewCls(void)
         eventEmitter->onEnd({});
         break;
       case VLCMediaPlayerStateESAdded:
-        RCTLog(@"mediaPlayerTimeChanged: %@", aNotification.object);
+        RCTLog(@"VLCMediaPlayer Elementary Stream added: %d", player.currentTitleIndex);
         break;
       case VLCMediaPlayerStateError:
-        NSString *errorString = [NSString stringWithFormat:@"[VLCMediaPlayerStateError]:%d", _player.numberOfAudioTracks];
+        NSString *errorString = [NSString stringWithFormat:@"[VLCMediaPlayerStateError]:%d", player.numberOfAudioTracks];
         eventEmitter->onError(AdvanceVideoPlayerViewEventEmitter::OnError{
           .error = [errorString UTF8String]
         });
@@ -204,28 +167,35 @@ Class<RCTComponentViewProtocol> AdvanceVideoPlayerViewCls(void)
 
 - (void)mediaPlayerTimeChanged:(NSNotification *)aNotification
 {
-  RCTLog(@"mediaPlayerTimeChanged: %@", aNotification.object);
-  [_player onPlay];
+  if ([aNotification.object isKindOfClass:[VLCMediaPlayer class]]) {
+    VLCMediaPlayer *player = (VLCMediaPlayer *)aNotification.object;
+    const auto eventEmitter = [self getEventEmitter];
+//    eventEmitter->onProgress(AdvanceVideoPlayerViewEventEmitter::OnProgress{
+//      .currentTime = player.time,
+//      .remainingTime = player.remainingTime,
+//      .position = player.position,
+//    });
+  }
 }
 
 - (void)mediaPlayerTitleChanged:(NSNotification *)aNotification
 {
-  RCTLog(@"mediaPlayerTitleChanged: %@", aNotification);
+//  RCTLog(@"mediaPlayerTitleChanged: %@", aNotification);
 }
 
 - (void)mediaPlayerChapterChanged:(NSNotification *)aNotification
 {
-  RCTLog(@"mediaPlayerChapterChanged: %@", aNotification);
+//  RCTLog(@"mediaPlayerChapterChanged: %@", aNotification);
 }
 
 - (void)mediaPlayerSnapshot:(NSNotification *)aNotification
 {
-  RCTLog(@"mediaPlayerSnapshot: %@", aNotification);
+//  RCTLog(@"mediaPlayerSnapshot: %@", aNotification);
 }
 
 - (void) mediaPlayerLoudnessChanged:(NSNotification *)aNotification
 {
-  RCTLog(@"mediaPlayerLoudnessChanged: %@", aNotification);
+//  RCTLog(@"mediaPlayerLoudnessChanged: %@", aNotification);
 }
 
 - (void) mediaPlayerStartedRecording:(VLCMediaPlayer *)player
@@ -236,6 +206,20 @@ Class<RCTComponentViewProtocol> AdvanceVideoPlayerViewCls(void)
 - (void) mediaPlayer:(VLCMediaPlayer *)player recordingStoppedAtPath:(NSString *) path
 {
   RCTLog(@"mediaPlayer recordingStoppedAtPath: %@", path);
+}
+
+// MARK: - VLCMediaDelegate
+- (void)mediaDidFinishParsing:(VLCMedia *)media
+{
+//  metaData.title, metaData.artist, metaData.albumArtist, metaData.album, metaData.genre, metaData.trackNumber, metaData.discNumber, metaData.artworkURL
+  VLCMediaMetaData *metaData = media.metaData;
+  NSLog(@"Meta data:%@", metaData);
+//  const auto eventEmitter = [self getEventEmitter];
+//  eventEmitter->onMediaMetaData(AdvanceVideoPlayerViewEventEmitter::OnMediaMetaData{
+//    .title = [metaData.title UTF8String],
+//    .artist = [metaData.artist UTF8String],
+//    .albumArtist = [metaData.albumArtist UTF8String],
+//  });
 }
 
 @end

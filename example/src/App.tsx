@@ -30,6 +30,11 @@ export default function App() {
         paused={paused}
         muted={muted}
         volume={volume}
+        onLoad={(data) => console.log('onLoad data:', data)}
+        onError={(data) => console.log('onError data:', data)}
+        onBuffer={(data) => console.log('onBuffer data:', data)}
+        onProgress={(data) => console.log('onProgress data:', data)}
+        onMediaMetaData={(data) => console.log('onMediaMetaData data:', data)}
       />
       <View style={styles.buttons}>
         <Button title="< -10 Sec" />

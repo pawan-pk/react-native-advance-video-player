@@ -17,20 +17,6 @@ RCT_EXPORT_MODULE(AdvanceVideoPlayerView)
   return [[AdvanceVideoPlayer alloc] init];
 }
 
-- (void)setAudioTrack:(UIView *)view track:(MediaTrack *)track {
-  if ([view isKindOfClass:[AdvanceVideoPlayer class]]) {
-      AdvanceVideoPlayer *playerView = (AdvanceVideoPlayer *)view;
-      [playerView setAudioTrackWithType:track.type value:track.value];
-  }
-}
-
-- (void)setTextTrack:(UIView *)view track:(MediaTrack *)track {
-    if ([view isKindOfClass:[AdvanceVideoPlayer class]]) {
-        AdvanceVideoPlayer *playerView = (AdvanceVideoPlayer *)view;
-        [playerView setTextTrackWithType:track.type value:track.value];
-    }
-}
-
 RCT_EXPORT_VIEW_PROPERTY(onLoad, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onEnd, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onError, RCTDirectEventBlock)
@@ -42,16 +28,7 @@ RCT_EXPORT_VIEW_PROPERTY(muted, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(volume, double)
 RCT_EXPORT_VIEW_PROPERTY(paused, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(resizeMode, NSString)
+RCT_EXPORT_VIEW_PROPERTY(audioTrack, int)
+RCT_EXPORT_VIEW_PROPERTY(textTrack, int)
 
-RCT_CUSTOM_VIEW_PROPERTY(selectedAudioTrack, NSArray, NSObject)
-{
-  MediaTrack *track = [RCTConvert MediaTrack:json];
-  [self performSelector:@selector(setAudioTrack:track:) withObject:view withObject:track];
-}
-
-RCT_CUSTOM_VIEW_PROPERTY(selectedTextTrack, NSArray, NSObject)
-{
-  MediaTrack *track = [RCTConvert MediaTrack:json];
-  [self performSelector:@selector(setTextTrack:track:) withObject:view withObject:track];
-}
 @end

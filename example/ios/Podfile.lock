@@ -3,7 +3,6 @@ PODS:
     - DoubleConversion
     - glog
     - hermes-engine
-    - MobileVLCKit
     - RCT-Folly (= 2024.11.18.00)
     - RCTRequired
     - RCTTypeSafety
@@ -20,6 +19,7 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
+    - VLCKit (~> 4.0.0a10)
     - Yoga
   - boost (1.84.0)
   - DoubleConversion (1.1.6)
@@ -30,7 +30,6 @@ PODS:
   - hermes-engine (0.78.2):
     - hermes-engine/Pre-built (= 0.78.2)
   - hermes-engine/Pre-built (0.78.2)
-  - MobileVLCKit (3.6.0)
   - RCT-Folly (2024.11.18.00):
     - boost
     - DoubleConversion
@@ -1549,6 +1548,7 @@ PODS:
     - React-perflogger (= 0.78.2)
     - React-utils (= 0.78.2)
   - SocketRocket (0.7.1)
+  - VLCKit (4.0.0a10)
   - Yoga (0.0.0)
 
 DEPENDENCIES:
@@ -1624,8 +1624,8 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - MobileVLCKit
     - SocketRocket
+    - VLCKit
 
 EXTERNAL SOURCES:
   AdvanceVideoPlayer:
@@ -1765,7 +1765,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  AdvanceVideoPlayer: a6e3851ed109458f76d7a61550b496e8398b44a1
+  AdvanceVideoPlayer: de6be3bfce05966636415855683953cdec1d4760
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   fast_float: 06eeec4fe712a76acc9376682e4808b05ce978b6
@@ -1773,7 +1773,6 @@ SPEC CHECKSUMS:
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: eb93e2f488219332457c3c4eafd2738ddc7e80b8
   hermes-engine: 2771b98fb813fdc6f92edd7c9c0035ecabf9fee7
-  MobileVLCKit: 8fe98ae53b7464f32e4bdf527cc7d53053e4d3a5
   RCT-Folly: e78785aa9ba2ed998ea4151e314036f6c49e6d82
   RCTDeprecation: be794de7dc6ed8f9f7fbf525f86e7651b8b68746
   RCTRequired: a83787b092ec554c2eb6019ff3f5b8d125472b3b
@@ -1833,6 +1832,7 @@ SPEC CHECKSUMS:
   ReactCodegen: 78b64f0ad96ef733616f54d0c20923f6c67287fd
   ReactCommon: 547db015202a80a5b3e7e041586ea54c4a087180
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
+  VLCKit: e21135aece10e3aa89e34020b7112b73d7cc98e6
   Yoga: e14bad835e12b6c7e2260fc320bd00e0f4b45add
 
 PODFILE CHECKSUM: c76e5999e5c0d75604e76a492e33f0cf7fb20071

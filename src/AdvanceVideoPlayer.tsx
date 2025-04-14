@@ -32,7 +32,6 @@ type VLCMedia = {
     width: number;
     height: number;
   };
-  duration: number;
   aspectRatio: string;
 };
 
@@ -70,27 +69,27 @@ const AdvanceVideoPlayer: FC<AdvanceVideoPlayerProps> = ({
   ...rest
 }) => {
   const onLoadMedia = (media: NativeVLCMedia) => {
-    const audioTracksIndexes = media.audioTracksIndexes.split(',');
-    const audioTracksNames = media.audioTracksNames.split(',');
-    const audioTracks = audioTracksIndexes.map((value, index) => ({
-      id: Number(value),
-      name: audioTracksNames[index]!,
-    }));
-    const subtitleTracksIndexes = media.subtitleTracksIndexes.split(',');
-    const subtitleTracksNames = media.subtitleTracksNames.split(',');
-    const subtitleTracks = subtitleTracksIndexes.map((value, index) => ({
-      id: Number(value),
-      name: subtitleTracksNames[index]!,
-    }));
+    console.log('media', onLoad, media);
+    // const audioTracksIndexes = media.audioTracksIndexes.split(',');
+    // const audioTracksNames = media.audioTracksNames.split(',');
+    // const audioTracks = audioTracksIndexes.map((value, index) => ({
+    //   id: Number(value),
+    //   name: audioTracksNames[index]!,
+    // }));
+    // const subtitleTracksIndexes = media.subtitleTracksIndexes.split(',');
+    // const subtitleTracksNames = media.subtitleTracksNames.split(',');
+    // const subtitleTracks = subtitleTracksIndexes.map((value, index) => ({
+    //   id: Number(value),
+    //   name: subtitleTracksNames[index]!,
+    // }));
 
-    onLoad?.({
-      titles: media.titles.split(','),
-      audioTracks: audioTracks,
-      subtitleTracks: subtitleTracks,
-      videoSize: media.videoSize,
-      duration: media.duration,
-      aspectRatio: media.aspectRatio,
-    });
+    // onLoad?.({
+    //   titles: media.titles.split(','),
+    //   audioTracks: audioTracks,
+    //   subtitleTracks: subtitleTracks,
+    //   videoSize: media.videoSize,
+    //   aspectRatio: media.aspectRatio,
+    // });
   };
 
   return (

@@ -5,7 +5,7 @@
 //  Created by Pawan Kushwaha on 08/04/25.
 //
 import UIKit
-import MobileVLCKit
+import VLCKit
 import AVFoundation
 import AVKit
 
@@ -57,10 +57,12 @@ public class AdvanceVideoPlayer: UIView {
   @objc public var delegate: VLCMediaPlayerDelegate?
   @objc public var mediaDelegate: VLCMediaDelegate?
   
-  private var player: VLCMediaPlayer = {
+  @objc public var player: VLCMediaPlayer = {
     let player = VLCMediaPlayer()
     return player
   }()
+  
+  @objc public var media: VLCMedia?
 
   
   override init(frame: CGRect) {
@@ -107,7 +109,14 @@ public class AdvanceVideoPlayer: UIView {
   }
 
   private func configureVLCPlayer(_ url: URL) {
-    let media = VLCMedia(url: url)
+    media = VLCMedia(url: url)
+    guard let media else { return }
+    
+    // MARK: Media Parser
+    media.delegate = mediaDelegate
+    let res = media.parse(options: [.parseNetwork,.fetchNetwork,.fetchLocal])
+    
+    // MARK: Player Initilization
     // https://stackoverflow.com/a/41961321/3614746
     let options: [String] = [
       // "network-caching=150",
@@ -121,12 +130,10 @@ public class AdvanceVideoPlayer: UIView {
       media.addOption("--\(option)")
       media.addOption(":\(option)")
     }
-//    media.delegate = mediaDelegate
-//    media.parse(options: [.parseNetwork,.fetchNetwork,.fetchLocal], timeout: 30)
     player.setDeinterlaceFilter(nil)
     player.adjustFilter.isEnabled = false
     player.media = media
-    player.drawable = playerView
+    self.player.drawable = self.playerView
     player.audio?.isMuted = muted
     if !paused {
       player.play()

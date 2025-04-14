@@ -7,8 +7,8 @@ import type {
 } from 'react-native/Libraries/Types/CodegenTypes';
 
 type MediaProgress = {
-  currentTime: Double;
-  remainingTime: Double;
+  currentTime: Int32;
+  remainingTime: Int32;
   position: Double;
 };
 
@@ -25,15 +25,14 @@ type NativeMediaMetaData = {
 
 export type NativeVLCMedia = {
   titles: string;
-  audioTracksIndexes: string;
-  audioTracksNames: string;
-  subtitleTracksIndexes: string;
-  subtitleTracksNames: string;
+  videoTracks: string;
+  audioTracks: string;
+  textTracks: string;
+  duration: Int32;
   videoSize: {
     width: Double;
     height: Double;
   };
-  duration: Double;
   aspectRatio: string;
 };
 

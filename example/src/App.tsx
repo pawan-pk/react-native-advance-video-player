@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button, SafeAreaView, StyleSheet, Text, View } from 'react-native';
-import AdvanceVideoPlayer from 'react-native-advance-video-player';
+import AdvanceVideoPlayer from '@pawan-pk/react-native-advance-video-player';
 
 export default function App() {
   const [paused, setPaused] = useState(false);

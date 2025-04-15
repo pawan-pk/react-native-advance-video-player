@@ -1,7 +1,7 @@
 {
-  "name": "react-native-advance-video-player",
+  "name": "@pawan-pk/react-native-advance-video-player",
   "version": "0.1.0",
-  "description": "react-native-advance-video-player is a next-gen React Native video player supporting HLS and HTTP streaming for smooth, high-quality playback, with easy integration and customizable features for a seamless media experience.",
+  "description": "@pawan-pk/react-native-advance-video-player is a next-gen React Native video player supporting HLS and HTTP streaming for smooth, high-quality playback, with easy integration and customizable features for a seamless media experience.",
   "source": "./src/index.tsx",
   "main": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",
@@ -32,7 +32,7 @@
     "!**/.*"
   ],
   "scripts": {
-    "example": "yarn workspace react-native-advance-video-player-example",
+    "example": "yarn workspace @pawan-pk/react-native-advance-video-player-example",
     "test": "jest",
     "typecheck": "tsc",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",

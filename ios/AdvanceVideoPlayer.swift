@@ -42,7 +42,8 @@ public class AdvanceVideoPlayer: UIView {
   }
   @objc public var paused: Bool = false {
     didSet {
-      paused ? player.pause() : player.play()
+        if player.media == nil { return }
+        paused ? player.pause() : player.play()
     }
   }
   @objc public var aspectRatio: Double = .zero {
@@ -57,11 +58,7 @@ public class AdvanceVideoPlayer: UIView {
   @objc public var delegate: VLCMediaPlayerDelegate?
   @objc public var mediaDelegate: VLCMediaDelegate?
   
-  @objc public var player: VLCMediaPlayer = {
-    let player = VLCMediaPlayer()
-    return player
-  }()
-  
+  @objc public var player: VLCMediaPlayer = VLCMediaPlayer()
   @objc public var media: VLCMedia?
 
   
@@ -114,7 +111,7 @@ public class AdvanceVideoPlayer: UIView {
     
     // MARK: Media Parser
     media.delegate = mediaDelegate
-    let res = media.parse(options: [.parseNetwork,.fetchNetwork,.fetchLocal])
+    media.parse(options: [.parseNetwork,.fetchNetwork,.fetchLocal])
     
     // MARK: Player Initilization
     // https://stackoverflow.com/a/41961321/3614746

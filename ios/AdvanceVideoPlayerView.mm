@@ -7,7 +7,6 @@
 
 #import "RCTFabricComponentsPlugins.h"
 #import "AdvanceVideoPlayer-Swift.h"
-#import "RCTConvert+MediaTrack.h"
 
 #import <VLCKit/VLCMediaPlayerTitleDescription.h>
 #import <VLCKit/VLCMediaMetaData.h>
